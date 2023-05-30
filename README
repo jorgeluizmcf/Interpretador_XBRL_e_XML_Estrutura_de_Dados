@@ -1,0 +1,7 @@
+O código funciona da seguinte forma:
+
+O usuário insere o caminho do arquivo XML via teclado.
+O arquivo XML é interpretado utilizando a classe XMLParser, que retorna a raiz da árvore de nós.
+Se a raiz não for nula, o conteúdo da árvore é exibido no console chamando o método printTree.
+O método printTree percorre a árvore em profundidade e exibe o nome dos nós com uma indentação proporcional à profundidade.
+A estrutura da árvore é exibida no console, mostrando a hierarquia dos elementos presentes no arquivo XML.
