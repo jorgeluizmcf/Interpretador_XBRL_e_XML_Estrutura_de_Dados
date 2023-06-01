@@ -8,9 +8,6 @@ public class CSVWriter {
         try {
             FileWriter writer = new FileWriter(filePath);
 
-            // Escrever o cabeçalho do CSV
-            writer.write("ContaContabil,InformacaoComplementar1,TipoInformacaoComplementar1,InformacaoComplementar2,TipoInformacaoComplementar2,InformacaoComplementar3,TipoInformacaoComplementar3,InformacaoComplementar4,TipoInformacaoComplementar4,InformacaoComplementar5,TipoInformacaoComplementar5,InformacaoComplementar6,TipoInformacaoComplementar6,Valor,TipoValor,NaturezaValor\n");
-
             writeNodeData(rootNode, writer, 0);
 
             writer.close();
@@ -22,29 +19,38 @@ public class CSVWriter {
     }
 
     private static void writeNodeData(TreeNode node, FileWriter writer, int depth) throws IOException {
-        // Escrever os dados do nó
-        StringBuilder sb = new StringBuilder();
+        // Escrever a tag do nó
+        writer.write(node.getTag());
 
-        // Obter as informações do nó
-        Map<String, String> attributes = node.getAttributes();
-        String contaContabil = attributes.getOrDefault("ContaContabil", "");
-        String informacaoComplementar1 = attributes.getOrDefault("InformacaoComplementar1", "");
-        String tipoInformacaoComplementar1 = attributes.getOrDefault("TipoInformacaoComplementar1", "");
-        String informacaoComplementar2 = attributes.getOrDefault("InformacaoComplementar2", "");
-        String tipoInformacaoComplementar2 = attributes.getOrDefault("TipoInformacaoComplementar2", "");
-        String informacaoComplementar3 = attributes.getOrDefault("InformacaoComplementar3", "");
-        String tipoInformacaoComplementar3 = attributes.getOrDefault("TipoInformacaoComplementar3", "");
-        String informacaoComplementar4 = attributes.getOrDefault("InformacaoComplementar4", "");
-        String tipoInformacaoComplementar4 = attributes.getOrDefault("TipoInformacaoComplementar4", "");
-        String informacaoComplementar5 = attributes.getOrDefault("InformacaoComplementar5", "");
-        String tipoInformacaoComplementar5 = attributes.getOrDefault("TipoInformacaoComplementar5", "");
-        String informacaoComplementar6 = attributes.getOrDefault("InformacaoComplementar6", "");
-        String tipoInformacaoComplementar6 = attributes.getOrDefault("TipoInformacaoComplementar6", "");
-        String valor = attributes.getOrDefault("Valor", "");
-        String tipoValor = attributes.getOrDefault("TipoValor", "");
-        String naturezaValor = attributes.getOrDefault("NaturezaValor", "");
+        // Escrever os atributos do nó
+        for (Map.Entry<String, String> entry : node.getAttributes().entrySet()) {
+            writer.write(";" + entry.getKey());
+            writer.write(";" + entry.getValue());
+        }
 
-        sb.append(escapeCSVField(contaContabil)).append(",");
-        sb.append(escapeCSVField(informacaoComplementar1)).append(",");
-        sb
+        // Escrever as informações do nó
+        writer.write("\n");
+        writer.write(getFormattedData(node.getInfo()));
+
+        // Percorrer os filhos do nó
+        List<TreeNode> children = node.getChildren();
+        for (TreeNode child : children) {
+            writeNodeData(child, writer, depth + 1);
+        }
     }
+
+    private static String getFormattedData(String info) {
+        // Tratar os valores ausentes com ponto e vírgula vazio
+        if (info.isEmpty()) {
+            return ";;;;;;;;;";
+        } else {
+            // Tratar os valores numéricos com ponto decimal e formatação de ponto e vírgula
+            try {
+                double value = Double.parseDouble(info);
+                return String.format("%.2f", value).replace('.', ',');
+            } catch (NumberFormatException e) {
+                return info;
+            }
+        }
+    }
+}
