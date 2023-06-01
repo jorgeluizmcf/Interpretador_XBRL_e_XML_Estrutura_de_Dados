@@ -4,11 +4,34 @@ import java.util.List;
 import java.util.Map;
 
 public class CSVWriter {
+    private static final String[] HEADER = {
+            "ContaContabil",
+            "InformacaoComplementar1",
+            "TipoInformacaoComplementar1",
+            "InformacaoComplementar2",
+            "TipoInformacaoComplementar2",
+            "InformacaoComplementar3",
+            "TipoInformacaoComplementar3",
+            "InformacaoComplementar4",
+            "TipoInformacaoComplementar4",
+            "InformacaoComplementar5",
+            "TipoInformacaoComplementar5",
+            "InformacaoComplementar6",
+            "TipoInformacaoComplementar6",
+            "Valor",
+            "TipoValor",
+            "NaturezaValor"
+    };
+
     public static void writeCSV(TreeNode rootNode, String filePath) {
         try {
             FileWriter writer = new FileWriter(filePath);
 
-            writeNodeData(rootNode, writer, 0);
+            // Escrever o cabeçalho
+            writeHeader(writer);
+
+            // Escrever os dados dos nós da árvore
+            writeNodeData(rootNode, writer);
 
             writer.close();
 
@@ -18,39 +41,45 @@ public class CSVWriter {
         }
     }
 
-    private static void writeNodeData(TreeNode node, FileWriter writer, int depth) throws IOException {
-        // Escrever a tag do nó
-        writer.write(node.getTag());
-
-        // Escrever os atributos do nó
-        for (Map.Entry<String, String> entry : node.getAttributes().entrySet()) {
-            writer.write(";" + entry.getKey());
-            writer.write(";" + entry.getValue());
+    private static void writeHeader(FileWriter writer) throws IOException {
+        for (int i = 0; i < HEADER.length; i++) {
+            writer.write(HEADER[i]);
+            if (i < HEADER.length - 1) {
+                writer.write(";");
+            }
         }
-
-        // Escrever as informações do nó
         writer.write("\n");
-        writer.write(getFormattedData(node.getInfo()));
-
-        // Percorrer os filhos do nó
-        List<TreeNode> children = node.getChildren();
-        for (TreeNode child : children) {
-            writeNodeData(child, writer, depth + 1);
-        }
     }
 
-    private static String getFormattedData(String info) {
-        // Tratar os valores ausentes com ponto e vírgula vazio
-        if (info.isEmpty()) {
-            return ";;;;;;;;;";
-        } else {
-            // Tratar os valores numéricos com ponto decimal e formatação de ponto e vírgula
-            try {
-                double value = Double.parseDouble(info);
-                return String.format("%.2f", value).replace('.', ',');
-            } catch (NumberFormatException e) {
-                return info;
-            }
+    private static void writeNodeData(TreeNode node, FileWriter writer) throws IOException {
+        if (node.getTag().equals("accountMainID")) {
+            writer.write(node.getInfo());
+            writer.write(";");
+        }
+
+        if (node.getTag().equals("accountSubID")) {
+            writer.write(node.getInfo());
+            writer.write(";");
+        }
+
+        if (node.getTag().equals("accountSubType")) {
+            writer.write(node.getInfo());
+            writer.write(";");
+        }
+
+        if (node.getTag().equals("amount")) {
+            writer.write(node.getInfo());
+            writer.write(";");
+        }
+
+        if (node.getTag().equals("debitCreditCode")) {
+            writer.write(node.getInfo());
+            writer.write("\n");
+        }
+
+        List<TreeNode> children = node.getChildren();
+        for (TreeNode child : children) {
+            writeNodeData(child, writer);
         }
     }
 }
