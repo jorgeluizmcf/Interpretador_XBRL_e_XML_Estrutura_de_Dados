@@ -18,8 +18,8 @@ public class CSVWriter {
             "InformacaoComplementar6",
             "TipoInformacaoComplementar6",
             "Valor",
-            "TipoValor",
-            "NaturezaValor"
+            "NaturezaValor",
+            "TipoValor"
     };
 
     public static void writeCSV(TreeNode rootNode, String filePath) {
@@ -50,13 +50,17 @@ public class CSVWriter {
         writer.write("\n");
     }
 
+    static int contadorInfoComplementar = 0;
     private static void writeNodeData(TreeNode node, FileWriter writer) throws IOException {
+
+
         if (node.getTag().equals("accountMainID")) {
             writer.write(node.getInfo());
             writer.write(";");
         }
 
         if (node.getTag().equals("accountSubID")) {
+            contadorInfoComplementar++;
             writer.write(node.getInfo());
             writer.write(";");
         }
@@ -67,13 +71,37 @@ public class CSVWriter {
         }
 
         if (node.getTag().equals("amount")) {
+            switch (contadorInfoComplementar){
+                case 1:
+                    writer.write(";;;;;;;;;;");
+                    break;
+                case 2:
+                    writer.write(";;;;;;;;");
+                    break;
+                case 3:
+                    writer.write(";;;;;;");
+                    break;
+                case 4:
+                    writer.write(";;;;");
+                    break;
+                case 5:
+                    writer.write(";;");
+                    break;
+            }
             writer.write(node.getInfo());
             writer.write(";");
+            contadorInfoComplementar = 0;
+        }
+
+        if (node.getTag().equals("xbrlInclude")) {
+            String tipoValor = node.getInfo(); // Obtém a informação da TAG xbrlInclude para o campo TipoValor
+            writer.write(tipoValor);
+            writer.write("\n");
         }
 
         if (node.getTag().equals("debitCreditCode")) {
             writer.write(node.getInfo());
-            writer.write("\n");
+            writer.write(";");
         }
 
         List<TreeNode> children = node.getChildren();

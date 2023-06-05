@@ -12,7 +12,7 @@ public class Main {
 
         if (rootNode != null) {
             System.out.print("Digite o nome do arquivo CSV a ser salvo: ");
-            String csvFileName = scanner.nextLine();
+            String csvFileName = scanner.nextLine() + ".csv";
 
             String csvFilePath = getCsvFilePath(xmlFilePath, csvFileName);
 
